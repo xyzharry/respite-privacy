@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Respite Driver — Find Your Next Break Spot</title>
+  <meta name="description" content="Find laybys, car parks and rest stops across the UK. 98,000+ locations, works offline. Free on iOS and Android." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blue: #007AFF;
+      --blue-dark: #0055cc;
+      --bg: #F2F2F7;
+      --white: #ffffff;
+      --ink: #0a0a0a;
+      --mid: #3c3c43;
+      --soft: #8e8e93;
+      --card: #ffffff;
+      --green: #34C759;
+      --orange: #FF9500;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 40px;
+      background: rgba(242,242,247,0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+
+    .nav-logo img {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+    }
+
+    .nav-logo span {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 17px;
+      color: var(--ink);
+      letter-spacing: -0.3px;
+    }
+
+    .nav-cta {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn-store-sm {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: transform 0.15s, opacity 0.15s;
+      white-space: nowrap;
+    }
+
+    .btn-store-sm:hover { opacity: 0.82; transform: translateY(-1px); }
+    .btn-store-sm.ios { background: var(--ink); color: var(--white); }
+    .btn-store-sm.android { background: var(--white); color: var(--ink); border: 1px solid rgba(0,0,0,0.12); }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 120px 40px 80px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 50% at 70% 40%, rgba(0,122,255,0.10) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 40% at 20% 70%, rgba(52,199,89,0.07) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .hero-grid {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+      width: 100%;
+    }
+
+    .hero-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(0,122,255,0.1);
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 5px 12px;
+      border-radius: 20px;
+      margin-bottom: 24px;
+    }
+
+    .hero-title {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2.4rem, 4.5vw, 3.6rem);
+      font-weight: 800;
+      line-height: 1.08;
+      letter-spacing: -1.5px;
+      color: var(--ink);
+      margin-bottom: 20px;
+    }
+
+    .hero-title .accent { color: var(--blue); }
+
+    .hero-body {
+      font-size: 17px;
+      line-height: 1.65;
+      color: var(--mid);
+      font-weight: 300;
+      margin-bottom: 36px;
+      max-width: 440px;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 48px;
+    }
+
+    .btn-store {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 24px;
+      border-radius: 14px;
+      text-decoration: none;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 500;
+      font-size: 15px;
+      transition: transform 0.18s cubic-bezier(.34,1.56,.64,1), box-shadow 0.18s;
+    }
+
+    .btn-store:hover { transform: translateY(-3px); }
+
+    .btn-store.ios {
+      background: var(--ink);
+      color: var(--white);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+    }
+
+    .btn-store.ios:hover { box-shadow: 0 14px 32px rgba(0,0,0,0.24); }
+
+    .btn-store.android {
+      background: var(--white);
+      color: var(--ink);
+      border: 1.5px solid rgba(0,0,0,0.10);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.07);
+    }
+
+    .btn-store.android:hover { box-shadow: 0 10px 28px rgba(0,0,0,0.12); }
+
+    .btn-store svg { flex-shrink: 0; }
+
+    .btn-store-inner { display: flex; flex-direction: column; line-height: 1.2; }
+    .btn-store-sub { font-size: 11px; font-weight: 400; opacity: 0.7; }
+    .btn-store-main { font-size: 15px; font-weight: 600; }
+
+    .hero-stats {
+      display: flex;
+      gap: 32px;
+    }
+
+    .stat { display: flex; flex-direction: column; }
+    .stat-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--ink);
+      letter-spacing: -0.5px;
+    }
+    .stat-label { font-size: 13px; color: var(--soft); font-weight: 400; }
+
+    /* ── PHONE MOCKUP ── */
+    .hero-visual {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+
+    .phone-wrap {
+      position: relative;
+      animation: float 4s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-14px); }
+    }
+
+    .phone-shell {
+      width: 260px;
+      background: var(--ink);
+      border-radius: 44px;
+      padding: 12px;
+      box-shadow:
+        0 40px 80px rgba(0,0,0,0.22),
+        0 0 0 1px rgba(255,255,255,0.06) inset;
+      position: relative;
+      z-index: 2;
+    }
+
+    .phone-screen {
+      background: var(--bg);
+      border-radius: 34px;
+      overflow: hidden;
+      height: 520px;
+      position: relative;
+    }
+
+    .phone-notch {
+      position: absolute;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90px;
+      height: 26px;
+      background: var(--ink);
+      border-radius: 14px;
+      z-index: 10;
+    }
+
+    .phone-ui {
+      padding: 56px 14px 14px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .phone-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2px;
+    }
+
+    .phone-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+
+    .phone-icons { display: flex; gap: 6px; }
+    .phone-icon {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.06);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px;
+    }
+
+    .phone-otw {
+      background: white;
+      border-radius: 12px;
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    .phone-otw-icon { font-size: 20px; }
+    .phone-otw-text { flex: 1; }
+    .phone-otw-title { font-size: 13px; font-weight: 600; }
+    .phone-otw-sub { font-size: 11px; color: var(--soft); }
+
+    .phone-stats {
+      text-align: center;
+      font-size: 12px;
+      color: var(--soft);
+    }
+    .phone-stats strong { color: var(--blue); font-weight: 600; }
+
+    .phone-map {
+      background: #e8f0e0;
+      border-radius: 12px;
+      height: 130px;
+      position: relative;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .map-road-h {
+      position: absolute;
+      top: 50%; left: 0; right: 0;
+      height: 18px;
+      background: rgba(255,255,255,0.7);
+      transform: translateY(-50%);
+    }
+
+    .map-road-v {
+      position: absolute;
+      left: 40%; top: 0; bottom: 0;
+      width: 12px;
+      background: rgba(255,255,255,0.5);
+    }
+
+    .map-pin {
+      position: absolute;
+      width: 18px; height: 18px;
+      border-radius: 50% 50% 50% 0;
+      transform: rotate(-45deg);
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .map-pin::after {
+      content: '';
+      width: 8px; height: 8px;
+      background: white;
+      border-radius: 50%;
+    }
+
+    .map-pin.blue { background: var(--blue); top: 30%; left: 20%; }
+    .map-pin.orange { background: var(--orange); top: 55%; left: 55%; }
+    .map-pin.green { background: var(--green); top: 20%; left: 65%; }
+    .map-pin.blue2 { background: var(--blue); top: 65%; left: 30%; }
+
+    .map-user {
+      position: absolute;
+      top: 50%; left: 40%;
+      transform: translate(-50%, -50%);
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      background: var(--blue);
+      border: 2.5px solid white;
+      box-shadow: 0 0 0 4px rgba(0,122,255,0.2);
+    }
+
+    .phone-card {
+      background: white;
+      border-radius: 12px;
+      padding: 11px 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    }
+
+    .phone-card-badge {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .phone-card-info { flex: 1; }
+    .phone-card-title { font-size: 12px; font-weight: 600; }
+    .phone-card-dist { font-size: 11px; color: var(--soft); }
+    .phone-card-tag {
+      font-size: 10px;
+      background: var(--bg);
+      padding: 2px 7px;
+      border-radius: 8px;
+      color: var(--soft);
+      font-weight: 500;
+    }
+
+    .phone-glow {
+      position: absolute;
+      width: 300px; height: 300px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(0,122,255,0.15) 0%, transparent 70%);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* ── FEATURES ── */
+    .features {
+      padding: 100px 40px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--blue);
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(1.8rem, 3vw, 2.6rem);
+      font-weight: 800;
+      letter-spacing: -1px;
+      line-height: 1.1;
+      margin-bottom: 60px;
+      max-width: 520px;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .feature-card {
+      background: var(--white);
+      border-radius: 20px;
+      padding: 28px;
+      border: 1px solid rgba(0,0,0,0.05);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.08);
+    }
+
+    .feature-icon {
+      width: 48px; height: 48px;
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+      margin-bottom: 18px;
+    }
+
+    .feature-name {
+      font-family: 'Syne', sans-serif;
+      font-size: 17px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      letter-spacing: -0.3px;
+    }
+
+    .feature-desc {
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--mid);
+      font-weight: 300;
+    }
+
+    /* ── CATEGORIES ── */
+    .categories {
+      padding: 80px 40px;
+      background: var(--ink);
+      color: var(--white);
+    }
+
+    .categories-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .categories-inner .section-label { color: rgba(255,255,255,0.5); }
+    .categories-inner .section-title { color: var(--white); margin-bottom: 40px; }
+
+    .cat-grid {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .cat-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 40px;
+      padding: 10px 18px;
+      font-size: 14px;
+      font-weight: 500;
+      transition: background 0.15s;
+    }
+
+    .cat-pill:hover { background: rgba(255,255,255,0.14); }
+
+    /* ── CTA ── */
+    .cta {
+      padding: 120px 40px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-bg {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 70% 60% at 50% 50%, rgba(0,122,255,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .cta-title {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      font-weight: 800;
+      letter-spacing: -1.5px;
+      margin-bottom: 16px;
+      position: relative;
+    }
+
+    .cta-sub {
+      font-size: 17px;
+      color: var(--mid);
+      font-weight: 300;
+      margin-bottom: 40px;
+      position: relative;
+    }
+
+    .cta-actions {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      flex-wrap: wrap;
+      position: relative;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      padding: 32px 40px;
+      border-top: 1px solid rgba(0,0,0,0.07);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .footer-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .footer-logo {
+      font-family: 'Syne', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .footer-copy { font-size: 13px; color: var(--soft); }
+
+    .footer-links {
+      display: flex;
+      gap: 24px;
+    }
+
+    .footer-links a {
+      font-size: 13px;
+      color: var(--soft);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+
+    .footer-links a:hover { color: var(--ink); }
+
+    /* ── FADE IN ── */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.6s cubic-bezier(.16,1,.3,1), transform 0.6s cubic-bezier(.16,1,.3,1);
+    }
+
+    .fade-up.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      nav { padding: 14px 20px; }
+      .nav-cta .btn-store-sm { display: none; }
+      .nav-cta .btn-store-sm:first-child { display: flex; }
+
+      .hero { padding: 100px 20px 60px; }
+      .hero-grid { grid-template-columns: 1fr; gap: 40px; }
+      .hero-visual { order: -1; }
+      .phone-shell { width: 220px; }
+      .phone-screen { height: 440px; }
+
+      .features { padding: 60px 20px; }
+      .features-grid { grid-template-columns: 1fr; }
+
+      .categories { padding: 60px 20px; }
+
+      .cta { padding: 80px 20px; }
+
+      footer { padding: 24px 20px; flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a href="/" class="nav-logo">
+      <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="32" height="32" rx="8" fill="#007AFF"/>
+        <rect x="2" y="2" width="28" height="28" rx="6" fill="white"/>
+        <rect x="4" y="4" width="24" height="24" rx="5" fill="white" stroke="#4AABF0" stroke-width="1.5"/>
+        <circle cx="16" cy="11" r="3.5" fill="#4AABF0"/>
+        <circle cx="16" cy="11" r="1.5" fill="white"/>
+        <path d="M8 17 Q16 12 24 17" stroke="#5CBF6A" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <path d="M8 20 Q16 15 24 20" stroke="#5CBF6A" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      </svg>
+      <span>Respite Driver</span>
+    </a>
+    <div class="nav-cta">
+      <a href="https://apps.apple.com/gb/app/respite-driver-layby-finder/id6753288510" class="btn-store-sm ios" target="_blank">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+        App Store
+      </a>
+      <a href="https://play.google.com/store/apps/details?id=com.harrygraham.respite" class="btn-store-sm android" target="_blank">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M3.18 23.76c.3.17.64.18.96.04l13.2-7.62-2.82-2.82-11.34 10.4zM.54 1.5C.2 1.82 0 2.33 0 3v18c0 .67.2 1.18.54 1.5l.08.08 10.08-10.08v-.24L.62 1.42l-.08.08zM20.46 10.4l-2.88-1.66-3.18 3.18 3.18 3.18 2.9-1.68c.82-.48.82-1.56-.02-2.02zM3.18.24l13.22 7.62-2.82 2.82L2.26.2l.92.04z"/></svg>
+        Google Play
+      </a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-grid">
+      <div class="hero-content">
+        <div class="hero-label fade-up">
+          <svg width="8" height="8" viewBox="0 0 8 8" fill="currentColor"><circle cx="4" cy="4" r="4"/></svg>
+          Free on iOS &amp; Android
+        </div>
+        <h1 class="hero-title fade-up">
+          Your next<br /><span class="accent">break spot</span><br />found.
+        </h1>
+        <p class="hero-body fade-up">
+          98,000+ laybys, car parks and rest stops across the UK — right in your pocket. Works offline. No sign-up needed.
+        </p>
+        <div class="hero-actions fade-up">
+          <a href="https://apps.apple.com/gb/app/respite-driver-layby-finder/id6753288510" class="btn-store ios" target="_blank">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+            <div class="btn-store-inner">
+              <span class="btn-store-sub">Download on the</span>
+              <span class="btn-store-main">App Store</span>
+            </div>
+          </a>
+          <a href="https://play.google.com/store/apps/details?id=com.harrygraham.respite" class="btn-store android" target="_blank">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3.18 23.76c.3.17.64.18.96.04l13.2-7.62-2.82-2.82-11.34 10.4zM.54 1.5C.2 1.82 0 2.33 0 3v18c0 .67.2 1.18.54 1.5l.08.08 10.08-10.08v-.24L.62 1.42l-.08.08zM20.46 10.4l-2.88-1.66-3.18 3.18 3.18 3.18 2.9-1.68c.82-.48.82-1.56-.02-2.02zM3.18.24l13.22 7.62-2.82 2.82L2.26.2l.92.04z"/></svg>
+            <div class="btn-store-inner">
+              <span class="btn-store-sub">Get it on</span>
+              <span class="btn-store-main">Google Play</span>
+            </div>
+          </a>
+        </div>
+        <div class="hero-stats fade-up">
+          <div class="stat">
+            <span class="stat-num">98k+</span>
+            <span class="stat-label">UK locations</span>
+          </div>
+          <div class="stat">
+            <span class="stat-num">Offline</span>
+            <span class="stat-label">No signal needed</span>
+          </div>
+          <div class="stat">
+            <span class="stat-num">Free</span>
+            <span class="stat-label">Core features</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- PHONE -->
+      <div class="hero-visual">
+        <div class="phone-glow"></div>
+        <div class="phone-wrap">
+          <div class="phone-shell">
+            <div class="phone-screen">
+              <div class="phone-notch"></div>
+              <div class="phone-ui">
+                <div class="phone-header">
+                  <span class="phone-title">Respite</span>
+                  <div class="phone-icons">
+                    <div class="phone-icon">📡</div>
+                    <div class="phone-icon">🗺️</div>
+                    <div class="phone-icon">⚙️</div>
+                  </div>
+                </div>
+                <div class="phone-otw">
+                  <span class="phone-otw-icon">🛣️</span>
+                  <div class="phone-otw-text">
+                    <div class="phone-otw-title">On the Way</div>
+                    <div class="phone-otw-sub">Find stops on your route</div>
+                  </div>
+                </div>
+                <div class="phone-stats">Found <strong>131</strong> stops within 2 miles</div>
+                <div class="phone-map">
+                  <div class="map-road-h"></div>
+                  <div class="map-road-v"></div>
+                  <div class="map-pin blue"></div>
+                  <div class="map-pin orange"></div>
+                  <div class="map-pin green"></div>
+                  <div class="map-pin blue2"></div>
+                  <div class="map-user"></div>
+                </div>
+                <div class="phone-card">
+                  <div class="phone-card-badge" style="background:#007AFF20">🅿️</div>
+                  <div class="phone-card-info">
+                    <div class="phone-card-title">Layby</div>
+                    <div class="phone-card-dist">0.2 miles away</div>
+                  </div>
+                  <span class="phone-card-tag">Free</span>
+                </div>
+                <div class="phone-card">
+                  <div class="phone-card-badge" style="background:#34C75920">🚻</div>
+                  <div class="phone-card-info">
+                    <div class="phone-card-title">Toilets</div>
+                    <div class="phone-card-dist">0.4 miles away</div>
+                  </div>
+                  <span class="phone-card-tag">Public</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="features">
+    <p class="section-label fade-up">Built for drivers</p>
+    <h2 class="section-title fade-up">Everything you need on a long shift.</h2>
+    <div class="features-grid">
+      <div class="feature-card fade-up">
+        <div class="feature-icon" style="background:#007AFF15">📍</div>
+        <div class="feature-name">Find stops nearby</div>
+        <p class="feature-desc">Laybys, car parks, rest areas and toilet facilities shown instantly around your current location.</p>
+      </div>
+      <div class="feature-card fade-up">
+        <div class="feature-icon" style="background:#34C75915">📶</div>
+        <div class="feature-name">Works offline</div>
+        <p class="feature-desc">All 98,000+ locations are bundled into the app. No mobile signal required to find a stop.</p>
+      </div>
+      <div class="feature-card fade-up">
+        <div class="feature-icon" style="background:#FF950015">🛣️</div>
+        <div class="feature-name">On the Way</div>
+        <p class="feature-desc">Enter your destination and find stops along your route with minimal detour time calculated for you.</p>
+      </div>
+      <div class="feature-card fade-up">
+        <div class="feature-icon" style="background:#AF52DE15">👁️</div>
+        <div class="feature-name">Street View preview</div>
+        <p class="feature-desc">See exactly what a stop looks like before you commit to the detour.</p>
+      </div>
+      <div class="feature-card fade-up">
+        <div class="feature-icon" style="background:#FF3B3015">🚛</div>
+        <div class="feature-name">HGV friendly</div>
+        <p class="feature-desc">Stops are tagged with HGV suitability, paid/free status, and available facilities at a glance.</p>
+      </div>
+      <div class="feature-card fade-up">
+        <div class="feature-icon" style="background:#007AFF15">🇬🇧</div>
+        <div class="feature-name">UK-wide coverage</div>
+        <p class="feature-desc">Sourced from OpenStreetMap with regular data updates covering the full length of the country.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CATEGORIES -->
+  <section class="categories">
+    <div class="categories-inner">
+      <p class="section-label fade-up">Stop types</p>
+      <h2 class="section-title fade-up">Six categories. One app.</h2>
+      <div class="cat-grid fade-up">
+        <div class="cat-pill">🅿️ Layby</div>
+        <div class="cat-pill">🏢 Car Park</div>
+        <div class="cat-pill">⛽ Fuel Station</div>
+        <div class="cat-pill">🛑 Rest Area</div>
+        <div class="cat-pill">🚻 Toilets</div>
+        <div class="cat-pill">🛒 Retail Park</div>
+        <div class="cat-pill">🍺 Hospitality</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta">
+    <div class="cta-bg"></div>
+    <h2 class="cta-title fade-up">Start finding break spots.</h2>
+    <p class="cta-sub fade-up">Free to download. No account needed.</p>
+    <div class="cta-actions fade-up">
+      <a href="https://apps.apple.com/gb/app/respite-driver-layby-finder/id6753288510" class="btn-store ios" target="_blank">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+        <div class="btn-store-inner">
+          <span class="btn-store-sub">Download on the</span>
+          <span class="btn-store-main">App Store</span>
+        </div>
+      </a>
+      <a href="https://play.google.com/store/apps/details?id=com.harrygraham.respite" class="btn-store android" target="_blank">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3.18 23.76c.3.17.64.18.96.04l13.2-7.62-2.82-2.82-11.34 10.4zM.54 1.5C.2 1.82 0 2.33 0 3v18c0 .67.2 1.18.54 1.5l.08.08 10.08-10.08v-.24L.62 1.42l-.08.08zM20.46 10.4l-2.88-1.66-3.18 3.18 3.18 3.18 2.9-1.68c.82-.48.82-1.56-.02-2.02zM3.18.24l13.22 7.62-2.82 2.82L2.26.2l.92.04z"/></svg>
+        <div class="btn-store-inner">
+          <span class="btn-store-sub">Get it on</span>
+          <span class="btn-store-main">Google Play</span>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-left">
+      <span class="footer-logo">Respite Driver</span>
+      <span class="footer-copy">© 2025 HG Software</span>
+    </div>
+    <div class="footer-links">
+      <a href="https://xyzharry.github.io/respite-privacy/">Privacy Policy</a>
+      <a href="https://xyzharry.github.io/respite-privacy/terms.html">Terms of Use</a>
+      <a href="mailto:harry@respitedriver.co.uk">Support</a>
+    </div>
+  </footer>
+
+  <script>
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry, i) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => entry.target.classList.add('visible'), i * 80);
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+  </script>
+</body>
+</html>
